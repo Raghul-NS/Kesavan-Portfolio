@@ -149,13 +149,13 @@ const services = [
 ];
 
 const works = [
-  { src: "/Videos/Reviewer Reel.mp4", poster: work4, cat: "Showreel", title: "Reviewer Showreel", duration: "1:14" },
-  { src: "/Videos/Ottiyanam.mp4", poster: work3, cat: "Product Showcase", title: "Ottiyanam Jewelry", duration: "0:45" },
-  { src: "/Videos/Professional.mp4", poster: work1, cat: "Corporate", title: "Professional Profile", duration: "0:50" },
-  { src: "/Videos/Gold.mp4", poster: work3, cat: "Commercial", title: "Gold Campaign", duration: "0:15" },
-  { src: "/Videos/Final.mp4", poster: work5, cat: "Commercial", title: "Brand Promo", duration: "0:30" },
-  { src: "/Videos/final output.mp4", poster: work6, cat: "Campaign", title: "Style Campaign", duration: "1:00" },
-  { src: "/Videos/final final out put.mp4", poster: work2, cat: "Creative", title: "Ultimate Showcase", duration: "0:45" },
+  { src: "/Videos/Reviewer Reel.mp4", cat: "Showreel", title: "Reviewer Showreel", duration: "1:14" },
+  { src: "/Videos/Ottiyanam.mp4", cat: "Product Showcase", title: "Ottiyanam Jewelry", duration: "0:45" },
+  { src: "/Videos/Professional.mp4", cat: "Corporate", title: "Professional Profile", duration: "0:50" },
+  { src: "/Videos/Gold.mp4", cat: "Commercial", title: "Gold Campaign", duration: "0:15" },
+  { src: "/Videos/Final.mp4", cat: "Commercial", title: "Brand Promo", duration: "0:30" },
+  { src: "/Videos/final output.mp4", cat: "Campaign", title: "Style Campaign", duration: "1:00" },
+  { src: "/Videos/final final out put.mp4", cat: "Creative", title: "Ultimate Showcase", duration: "0:45" },
 ];
 
 const skills = [
@@ -646,11 +646,10 @@ function WorkCard({ w, i, onClick }: WorkCardProps) {
           <video
             ref={videoRef}
             src={w.src}
-            poster={w.poster}
             muted
             loop
             playsInline
-            preload="none"
+            preload="metadata"
             className="h-full w-full object-cover transition-transform duration-700 ease-[0.22,1,0.36,1] group-hover:scale-105"
             onLoadedMetadata={handleLoadedMetadata}
           />
