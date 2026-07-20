@@ -730,7 +730,7 @@ function ProjectModal({ index, onClose }: { index: number | null; onClose: () =>
     setAspectRatio(e.currentTarget.videoWidth / e.currentTarget.videoHeight);
   };
 
-  const isPortrait = aspectRatio !== null && aspectRatio < 0.95;
+  const isPortrait = aspectRatio === null || aspectRatio < 0.95;
 
   return (
     <AnimatePresence>
@@ -770,6 +770,8 @@ function ProjectModal({ index, onClose }: { index: number | null; onClose: () =>
                       src={w.src}
                       controls
                       autoPlay
+                      playsInline
+                      preload="auto"
                       className="h-full w-full object-cover"
                       onLoadedMetadata={handleLoadedMetadata}
                     />
@@ -777,7 +779,7 @@ function ProjectModal({ index, onClose }: { index: number | null; onClose: () =>
                 </div>
 
                 {/* Right Column: Details */}
-                <div className="p-6 sm:p-8 flex flex-col justify-center overflow-y-auto max-h-[85vh]">
+                <div className="p-6 sm:p-8 flex flex-col justify-center md:overflow-y-auto md:max-h-[85vh]">
                   <div>
                     <span className="text-xs font-semibold uppercase tracking-[0.25em] text-[#4F8CFF]">{w.cat}</span>
                     <h3 className="mt-2 text-2xl sm:text-3xl font-bold text-white">{w.title}</h3>
@@ -795,7 +797,7 @@ function ProjectModal({ index, onClose }: { index: number | null; onClose: () =>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
-                      <InfoTile label="Timeline" value="5 days" icon={Clock} />
+                      <InfoTile label="Timeline" value="1-2 days" icon={Clock} />
                       <InfoTile label="Duration" value={w.duration} icon={Video} />
                       <InfoTile label="Software" value="Premiere + Resolve" icon={Layers} />
                       <InfoTile label="Deliverable" value="4K master" icon={Film} />
@@ -823,6 +825,8 @@ function ProjectModal({ index, onClose }: { index: number | null; onClose: () =>
                     src={w.src}
                     controls
                     autoPlay
+                    playsInline
+                    preload="auto"
                     className="w-full h-full max-h-[60vh] object-contain"
                     onLoadedMetadata={handleLoadedMetadata}
                   />
@@ -845,7 +849,7 @@ function ProjectModal({ index, onClose }: { index: number | null; onClose: () =>
                   </div>
                   <div>
                     <div className="grid grid-cols-2 gap-3">
-                      <InfoTile label="Timeline" value="5 days" icon={Clock} />
+                      <InfoTile label="Timeline" value="1-2 days" icon={Clock} />
                       <InfoTile label="Duration" value={w.duration} icon={Video} />
                       <InfoTile label="Software" value="Premiere + Resolve" icon={Layers} />
                       <InfoTile label="Deliverable" value="4K master" icon={Film} />
