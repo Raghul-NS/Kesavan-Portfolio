@@ -655,15 +655,30 @@ function WorkCard({ w, i, onClick }: WorkCardProps) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent pointer-events-none transition-opacity duration-300 group-hover:from-black/95" />
           
-          <motion.div
-            variants={{ hover: { opacity: 1 } }}
-            initial={{ opacity: 0 }}
-            className="absolute inset-0 grid place-items-center bg-black/30 pointer-events-none transition-opacity duration-300"
-          >
-            <div className="grid h-16 w-16 place-items-center rounded-full bg-white text-black shadow-2xl">
-              <Play className="h-6 w-6 fill-current ml-1" />
-            </div>
-          </motion.div>
+          <div className="absolute inset-0 grid place-items-center bg-black/5 pointer-events-none">
+            <motion.div
+              variants={{
+                hover: { 
+                  scale: 1.1, 
+                  backgroundColor: "rgba(255, 255, 255, 1)", 
+                  color: "rgba(0, 0, 0, 1)", 
+                  borderColor: "rgba(255, 255, 255, 1)",
+                  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.4)" 
+                }
+              }}
+              initial={{ 
+                scale: 1, 
+                backgroundColor: "rgba(255, 255, 255, 0.15)", 
+                color: "rgba(255, 255, 255, 0.9)",
+                borderColor: "rgba(255, 255, 255, 0.25)",
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)" 
+              }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="grid h-14 w-14 place-items-center rounded-full border backdrop-blur-md text-white"
+            >
+              <Play className="h-5 w-5 fill-current ml-0.5" />
+            </motion.div>
+          </div>
           
           <div className="absolute inset-x-0 bottom-0 p-5 flex items-end justify-between pointer-events-none">
             <div className="min-w-0 pr-4">
