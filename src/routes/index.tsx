@@ -149,12 +149,13 @@ const services = [
 ];
 
 const works = [
-  { src: work1, cat: "Documentary", title: "Peaks of Silence", duration: "3:24", tall: false },
-  { src: work2, cat: "Fashion", title: "Neon Alley", duration: "0:45", tall: true },
-  { src: work3, cat: "Product", title: "Timepiece", duration: "0:30", tall: false },
-  { src: work4, cat: "Reel", title: "Studio Motion", duration: "0:22", tall: true },
-  { src: work5, cat: "Short Film", title: "Analog Dreams", duration: "2:12", tall: false },
-  { src: work6, cat: "Sports", title: "Sprint", duration: "1:05", tall: true },
+  { src: "/Videos/Reviewer Reel.mp4", cat: "Showreel", title: "Reviewer Showreel", duration: "1:14" },
+  { src: "/Videos/Ottiyanam.mp4", cat: "Product Showcase", title: "Ottiyanam Jewelry", duration: "0:45" },
+  { src: "/Videos/Professional.mp4", cat: "Corporate", title: "Professional Profile", duration: "0:50" },
+  { src: "/Videos/Gold.mp4", cat: "Commercial", title: "Gold Campaign", duration: "0:15" },
+  { src: "/Videos/Final.mp4", cat: "Commercial", title: "Brand Promo", duration: "0:30" },
+  { src: "/Videos/final output.mp4", cat: "Campaign", title: "Style Campaign", duration: "1:00" },
+  { src: "/Videos/final final out put.mp4", cat: "Creative", title: "Ultimate Showcase", duration: "0:45" },
 ];
 
 const skills = [
@@ -593,7 +594,94 @@ function Services() {
   );
 }
 
+interface WorkCardProps {
+  w: typeof works[0];
+  i: number;
+  onClick: () => void;
+}
+
+function WorkCard({ w, i, onClick }: WorkCardProps) {
+  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
+  const [duration, setDuration] = useState(w.duration);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const handleMouseEnter = () => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  };
+
+  const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    setAspectRatio(video.videoWidth / video.videoHeight);
+    const mins = Math.floor(video.duration / 60);
+    const secs = Math.floor(video.duration % 60);
+    setDuration(`${mins}:${secs.toString().padStart(2, "0")}`);
+  };
+
+  // Safe fallback to 3:4 aspect ratio for vertical and 4:3 for horizontal to reduce height
+  const isPortrait = aspectRatio !== null ? aspectRatio < 0.95 : true;
+  const displayAspect = isPortrait ? "3/4" : "4/3";
+
+  return (
+    <Reveal delay={i % 3} className="w-full h-full">
+      <motion.button
+        onClick={onClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        whileHover="hover"
+        className="group relative block w-full overflow-hidden rounded-2xl border border-white/10 text-left bg-white/[0.02]"
+      >
+        <div
+          className="relative overflow-hidden transition-all duration-500"
+          style={{ aspectRatio: displayAspect }}
+        >
+          <video
+            ref={videoRef}
+            src={w.src}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            className="h-full w-full object-cover transition-transform duration-700 ease-[0.22,1,0.36,1] group-hover:scale-105"
+            onLoadedMetadata={handleLoadedMetadata}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent pointer-events-none transition-opacity duration-300 group-hover:from-black/95" />
+          
+          <motion.div
+            variants={{ hover: { opacity: 1 } }}
+            initial={{ opacity: 0 }}
+            className="absolute inset-0 grid place-items-center bg-black/30 pointer-events-none transition-opacity duration-300"
+          >
+            <div className="grid h-16 w-16 place-items-center rounded-full bg-white text-black shadow-2xl">
+              <Play className="h-6 w-6 fill-current ml-1" />
+            </div>
+          </motion.div>
+          
+          <div className="absolute inset-x-0 bottom-0 p-5 flex items-end justify-between pointer-events-none">
+            <div className="min-w-0 pr-4">
+              <div className="text-[10px] uppercase tracking-[0.25em] text-[#4F8CFF] font-medium">{w.cat}</div>
+              <div className="mt-1 text-base sm:text-lg font-semibold text-white truncate">{w.title}</div>
+            </div>
+            <div className="glass rounded-full px-3 py-1 text-xs font-mono text-white/95 shrink-0">{duration}</div>
+          </div>
+        </div>
+      </motion.button>
+    </Reveal>
+  );
+}
+
 function Works({ onOpen }: { onOpen: (i: number) => void }) {
+  const [showAll, setShowAll] = useState(false);
+  const visibleWorks = showAll ? works : works.slice(0, 6);
+
   return (
     <section id="work" className="relative py-32 border-t border-white/5">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
@@ -602,45 +690,18 @@ function Works({ onOpen }: { onOpen: (i: number) => void }) {
           title="Selected edits."
           sub="A rotating reel of recent projects — reels, shorts, brand films, and product spots."
         />
-        <div className="mt-16 columns-1 sm:columns-2 lg:columns-3 gap-5 [column-fill:_balance]">
-          {works.map((w, i) => (
-            <Reveal key={w.title} delay={i % 3} className="mb-5 break-inside-avoid">
-              <motion.button
-                onClick={() => onOpen(i)}
-                whileHover="hover"
-                className="group relative block w-full overflow-hidden rounded-2xl border border-white/10 text-left"
-              >
-                <div className={`relative overflow-hidden ${w.tall ? "aspect-[3/4]" : "aspect-[4/3]"}`}>
-                  <motion.img
-                    src={w.src}
-                    alt={w.title}
-                    loading="lazy"
-                    variants={{ hover: { scale: 1.08 } }}
-                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                    className="h-full w-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                  <motion.div
-                    variants={{ hover: { opacity: 1 } }}
-                    initial={{ opacity: 0 }}
-                    className="absolute inset-0 grid place-items-center bg-black/30"
-                  >
-                    <div className="grid h-16 w-16 place-items-center rounded-full bg-white text-black">
-                      <Play className="h-6 w-6 fill-current ml-1" />
-                    </div>
-                  </motion.div>
-                </div>
-                <div className="absolute inset-x-0 bottom-0 p-5 flex items-end justify-between">
-                  <div>
-                    <div className="text-[10px] uppercase tracking-[0.25em] text-[#4F8CFF]">{w.cat}</div>
-                    <div className="mt-1 text-lg font-semibold">{w.title}</div>
-                  </div>
-                  <div className="glass rounded-full px-3 py-1 text-xs font-mono">{w.duration}</div>
-                </div>
-              </motion.button>
-            </Reveal>
+        <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {visibleWorks.map((w, i) => (
+            <WorkCard key={w.title} w={w} i={i} onClick={() => onOpen(i)} />
           ))}
         </div>
+        {works.length > 6 && (
+          <div className="mt-12 flex justify-center">
+            <MagneticButton onClick={() => setShowAll(!showAll)} variant="ghost">
+              {showAll ? "Show Less" : `Show All Videos (${works.length})`}
+            </MagneticButton>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -648,6 +709,21 @@ function Works({ onOpen }: { onOpen: (i: number) => void }) {
 
 function ProjectModal({ index, onClose }: { index: number | null; onClose: () => void }) {
   const w = index !== null ? works[index] : null;
+  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (index === null) {
+      setAspectRatio(null);
+    }
+  }, [index]);
+
+  const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    setAspectRatio(e.currentTarget.videoWidth / e.currentTarget.videoHeight);
+  };
+
+  const isPortrait = aspectRatio !== null && aspectRatio < 0.95;
+
   return (
     <AnimatePresence>
       {w && (
@@ -655,7 +731,7 @@ function ProjectModal({ index, onClose }: { index: number | null; onClose: () =>
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] grid place-items-center bg-black/80 backdrop-blur-md p-4 sm:p-8"
+          className="fixed inset-0 z-[100] grid place-items-center bg-black/85 backdrop-blur-md p-4 sm:p-8 overflow-y-auto"
           onClick={onClose}
         >
           <motion.div
@@ -664,61 +740,121 @@ function ProjectModal({ index, onClose }: { index: number | null; onClose: () =>
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl glass-strong bg-[#0a0a0a]/95"
+            className={`relative w-full rounded-3xl glass-strong bg-[#0a0a0a]/95 overflow-hidden ${
+              isPortrait ? "md:max-w-4xl max-w-lg" : "max-w-5xl"
+            }`}
           >
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-10 grid h-10 w-10 place-items-center rounded-full glass hover:bg-white/10"
+              className="absolute top-4 right-4 z-50 grid h-10 w-10 place-items-center rounded-full glass hover:bg-white/10 text-white/70 hover:text-white transition"
               aria-label="Close"
             >
               <X className="h-4 w-4" />
             </button>
-            <div className="relative aspect-video overflow-hidden rounded-t-3xl">
-              <img src={w.src} alt={w.title} className="h-full w-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6">
-                <div className="text-xs uppercase tracking-[0.25em] text-[#4F8CFF]">{w.cat}</div>
-                <h3 className="mt-2 text-3xl sm:text-4xl font-bold">{w.title}</h3>
-              </div>
-              <button className="absolute inset-0 m-auto grid h-20 w-20 place-items-center rounded-full bg-white/95 text-black hover:scale-105 transition">
-                <Play className="h-8 w-8 fill-current ml-1" />
-              </button>
-            </div>
-            <div className="grid gap-8 p-6 sm:p-10 md:grid-cols-2">
-              <div>
-                <h4 className="text-xs uppercase tracking-[0.2em] text-white/50">Before → After</h4>
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  <div className="aspect-video rounded-xl bg-white/5 border border-white/10 grid place-items-center text-xs text-white/40">Raw footage</div>
-                  <div className="aspect-video rounded-xl overflow-hidden border border-[#4F8CFF]/30">
-                    <img src={w.src} alt="" className="h-full w-full object-cover" />
+
+            {isPortrait ? (
+              <div className="grid md:grid-cols-[1fr_1.2fr] gap-0">
+                {/* Left Column: Portrait Video */}
+                <div className="relative bg-black flex items-center justify-center p-6 sm:p-8 border-b md:border-b-0 md:border-r border-white/5">
+                  <div className="relative w-full max-w-[280px] sm:max-w-[320px] aspect-[9/16] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10">
+                    <video
+                      ref={videoRef}
+                      src={w.src}
+                      controls
+                      autoPlay
+                      className="h-full w-full object-cover"
+                      onLoadedMetadata={handleLoadedMetadata}
+                    />
                   </div>
                 </div>
-                <h4 className="mt-6 text-xs uppercase tracking-[0.2em] text-white/50">Editing Process</h4>
-                <ul className="mt-3 space-y-2 text-sm text-white/70">
-                  <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-[#4F8CFF] shrink-0" /> Rough cut & pacing pass</li>
-                  <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-[#4F8CFF] shrink-0" /> Sound design & beat sync</li>
-                  <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-[#4F8CFF] shrink-0" /> Cinematic color grade</li>
-                  <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-[#4F8CFF] shrink-0" /> Motion graphics & titles</li>
-                </ul>
-              </div>
-              <div>
-                <div className="grid grid-cols-2 gap-3">
-                  <InfoTile label="Timeline" value="5 days" icon={Clock} />
-                  <InfoTile label="Duration" value={w.duration} icon={Video} />
-                  <InfoTile label="Software" value="Premiere + Resolve" icon={Layers} />
-                  <InfoTile label="Deliverable" value="4K master" icon={Film} />
+
+                {/* Right Column: Details */}
+                <div className="p-6 sm:p-8 flex flex-col justify-center overflow-y-auto max-h-[85vh]">
+                  <div>
+                    <span className="text-xs font-semibold uppercase tracking-[0.25em] text-[#4F8CFF]">{w.cat}</span>
+                    <h3 className="mt-2 text-2xl sm:text-3xl font-bold text-white">{w.title}</h3>
+                  </div>
+
+                  <div className="mt-6 space-y-6">
+                    <div>
+                      <h4 className="text-xs uppercase tracking-[0.2em] text-white/50">Editing Process</h4>
+                      <ul className="mt-3 space-y-2 text-sm text-white/70">
+                        <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-[#4F8CFF] shrink-0" /> Rough cut & pacing pass</li>
+                        <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-[#4F8CFF] shrink-0" /> Sound design & beat sync</li>
+                        <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-[#4F8CFF] shrink-0" /> Cinematic color grade</li>
+                        <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-[#4F8CFF] shrink-0" /> Motion graphics & titles</li>
+                      </ul>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <InfoTile label="Timeline" value="5 days" icon={Clock} />
+                      <InfoTile label="Duration" value={w.duration} icon={Video} />
+                      <InfoTile label="Software" value="Premiere + Resolve" icon={Layers} />
+                      <InfoTile label="Deliverable" value="4K master" icon={Film} />
+                    </div>
+
+                    <div>
+                      <h4 className="text-xs uppercase tracking-[0.2em] text-white/50">Client Goals</h4>
+                      <p className="mt-2 text-sm text-white/70 leading-relaxed">
+                        A cinematic {w.cat.toLowerCase()} edit that holds viewers past the 3-second scroll and drives
+                        measurable engagement.
+                      </p>
+                      <h4 className="mt-4 text-xs uppercase tracking-[0.2em] text-white/50">Final Result</h4>
+                      <p className="mt-2 text-sm text-white/70 leading-relaxed">
+                        Delivered on brief, on time. Retention lift of 30–45% versus the client's previous baseline.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <h4 className="mt-6 text-xs uppercase tracking-[0.2em] text-white/50">Client Goals</h4>
-                <p className="mt-2 text-sm text-white/70 leading-relaxed">
-                  A cinematic {w.cat.toLowerCase()} edit that holds viewers past the 3-second scroll and drives
-                  measurable engagement.
-                </p>
-                <h4 className="mt-4 text-xs uppercase tracking-[0.2em] text-white/50">Final Result</h4>
-                <p className="mt-2 text-sm text-white/70 leading-relaxed">
-                  Delivered on brief, on time. Retention lift of 30–45% versus the client's previous baseline.
-                </p>
               </div>
-            </div>
+            ) : (
+              <>
+                <div className="relative bg-black flex items-center justify-center" style={{ aspectRatio: aspectRatio || "16/9", maxHeight: "60vh" }}>
+                  <video
+                    ref={videoRef}
+                    src={w.src}
+                    controls
+                    autoPlay
+                    className="w-full h-full max-h-[60vh] object-contain"
+                    onLoadedMetadata={handleLoadedMetadata}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute bottom-6 left-6 right-6 pointer-events-none">
+                    <div className="text-xs uppercase tracking-[0.25em] text-[#4F8CFF]">{w.cat}</div>
+                    <h3 className="mt-2 text-3xl sm:text-4xl font-bold text-white">{w.title}</h3>
+                  </div>
+                </div>
+                
+                <div className="grid gap-8 p-6 sm:p-10 md:grid-cols-2">
+                  <div>
+                    <h4 className="text-xs uppercase tracking-[0.2em] text-white/50">Editing Process</h4>
+                    <ul className="mt-3 space-y-2 text-sm text-white/70">
+                      <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-[#4F8CFF] shrink-0" /> Rough cut & pacing pass</li>
+                      <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-[#4F8CFF] shrink-0" /> Sound design & beat sync</li>
+                      <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-[#4F8CFF] shrink-0" /> Cinematic color grade</li>
+                      <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-[#4F8CFF] shrink-0" /> Motion graphics & titles</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <InfoTile label="Timeline" value="5 days" icon={Clock} />
+                      <InfoTile label="Duration" value={w.duration} icon={Video} />
+                      <InfoTile label="Software" value="Premiere + Resolve" icon={Layers} />
+                      <InfoTile label="Deliverable" value="4K master" icon={Film} />
+                    </div>
+                    <h4 className="mt-6 text-xs uppercase tracking-[0.2em] text-white/50">Client Goals</h4>
+                    <p className="mt-2 text-sm text-white/70 leading-relaxed">
+                      A cinematic {w.cat.toLowerCase()} edit that holds viewers past the 3-second scroll and drives
+                      measurable engagement.
+                    </p>
+                    <h4 className="mt-4 text-xs uppercase tracking-[0.2em] text-white/50">Final Result</h4>
+                    <p className="mt-2 text-sm text-white/70 leading-relaxed">
+                      Delivered on brief, on time. Retention lift of 30–45% versus the client's previous baseline.
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
           </motion.div>
         </motion.div>
       )}
