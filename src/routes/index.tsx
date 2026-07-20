@@ -396,13 +396,6 @@ function Hero() {
                   </div>
                   <div className="relative aspect-video overflow-hidden rounded-xl bg-black">
                     <img src={work2} alt="Reel preview" className="h-full w-full object-cover" width={900} height={1200} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                    <motion.button
-                      whileHover={{ scale: 1.08 }}
-                      className="absolute inset-0 m-auto grid h-16 w-16 place-items-center rounded-full bg-white/95 text-black"
-                    >
-                      <Play className="h-6 w-6 fill-current ml-1" />
-                    </motion.button>
                     {/* timeline */}
                     <div className="absolute bottom-3 left-3 right-3 space-y-1.5">
                       <div className="h-1 rounded-full bg-white/20 overflow-hidden">
